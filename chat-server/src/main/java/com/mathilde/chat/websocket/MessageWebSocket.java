@@ -1,7 +1,8 @@
 package com.mathilde.chat.websocket;
 
-import java.sql.Date;
+
 import java.text.SimpleDateFormat;
+import java.util.Date; 
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -29,8 +30,10 @@ public class MessageWebSocket {
     @MessageMapping("/chat")
     @SendTo("/topic/messages")
     public OutputMessage send(MessageWebSocket message) throws Exception {
-        String time = new SimpleDateFormat("HH:mm").format(new Date(0));
-        return new OutputMessage(message.getFrom(), message.getText(), time);
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");  
+        Date time = new Date();
+        String date = formatter.format(time);        
+        return new OutputMessage(message.getFrom(), message.getText(), date);
     }
     
 }

@@ -46,7 +46,7 @@ class MessageController {
     return messageRepository.findById(id)
       .map(message -> {
         message.setIdSender(newMessage.getIdSender());
-        message.setIdReceiver(newMessage.getIdReceiver());
+        message.setIdChatRoom(newMessage.getIdChatRoom());
         //message.setState(newMessage.getState());
         message.setTextmessage(newMessage.getTextmessage());
         message.setDate(newMessage.getDate());

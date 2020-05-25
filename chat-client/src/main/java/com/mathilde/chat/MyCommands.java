@@ -29,6 +29,7 @@ public class MyCommands {
 
     @ShellMethod("Connect User")
     public String connect(String username, String password) {
+        WebSocketEventSender.connectWebSocket();
         String message= "";
         int connection = ReadHttpClient.connectUser(username,password);
         if (connection >0){
@@ -50,7 +51,7 @@ public class MyCommands {
     @ShellMethod("Add User -- Choose your password")
     public String addUser(String username, String password) {
         String reponse;
-        boolean result = WebSocketEventSender.addUser(username,password);
+        boolean result = false; // WebSocketEventSender.addUser(username,password);
         if (result) reponse = "NEW USER " + username+ "CREATED";
         else reponse = "USER CREATION FAILED";
         return reponse;
@@ -64,20 +65,12 @@ public class MyCommands {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");  
         Date time = new Date();   
         String date = formatter.format(time);
-        boolean result = WebSocketEventSender.addMessage(ID_CLIENT, idreceiver, date,textmessage);
+        boolean result = false; //WebSocketEventSender.addMessage(ID_CLIENT, idreceiver, date,textmessage);
         if (result) reponse = "NEW MESSAGE CREATED";
         else reponse = "MESSAGE CREATION FAILED";
         return reponse;
     } 
 
-    /*@ShellMethod("Get Message List")
-    public String messageList() {
-        String reponse;
-        if (ID_CLIENT == -1){
-            reponse = "You must connect first";
-        } else reponse = ReadHttpClient.listStringToString(ReadHttpClient.getMessageList(ID_CLIENT));
-        return reponse;
-    }*/
 
     @ShellMethod("Get Chat List")
     public String chatList() {
@@ -94,13 +87,13 @@ public class MyCommands {
     }
 
     @ShellMethod("Get Message List from a Chat")
-    public String messageByChat(String chatUsername) {
+    public String messageByChat(int chatroom) {
         String reponse;
         if (ID_CLIENT == -1){
             reponse = "YOU MUST CONNECT FIRST";
         } 
         else {
-            List<String> reponselist = ReadHttpClient.getMessageFromChat(ID_CLIENT, chatUsername);
+            List<String> reponselist = ReadHttpClient.getMessageFromChat(chatroom);
             if (reponselist.equals(emptyList)) reponse = "NO MESSAGE IN THIS CHAT";
             else reponse = ReadHttpClient.listStringToString(reponselist);
         }

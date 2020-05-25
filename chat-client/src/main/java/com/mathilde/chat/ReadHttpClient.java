@@ -10,8 +10,11 @@ import java.util.List;
 public class ReadHttpClient {
   static ResponseEntity<String> message;
   static ResponseEntity<String> user;
+  static ResponseEntity<String> chat;
   final static String MESSAGE_URI = "http://localhost:8080/message";
   final static String USER_URI = "http://localhost:8080/user";
+  final static String CHAT_URI = "http://localhost:8080/chat";
+
 
   // collect information from message page
   public static String getMessage() {
@@ -24,6 +27,13 @@ public class ReadHttpClient {
   public static String getUser() {
     RestTemplate restTemplate = new RestTemplate();
     user = restTemplate.getForEntity(USER_URI, String.class);
+    return user.getBody();
+  }
+
+   // collect information from chat page
+   public static String getChat() {
+    RestTemplate restTemplate = new RestTemplate();
+    chat = restTemplate.getForEntity(CHAT_URI, String.class);
     return user.getBody();
   }
 
@@ -96,43 +106,10 @@ public class ReadHttpClient {
   }
 
 
-
-  // return list of messages sent or received by user (iduser)
-  /*public static List<String> getMessageList(int iduser){
-    String textJSON = ReadHttpClient.getMessage();
-    List<String> reponse = new ArrayList<>();
-    int indexStart = 0;
-    int indexEnd = 0;
-    for (int i = 0; i <textJSON.length(); i++){
-      char charI = textJSON.charAt(i);
-      if (charI=='{') {
-        indexStart = i;
-      }
-      if (charI=='}') {
-        indexEnd = i;
-        JSONObject arr = new JSONObject(sliceRange(textJSON,indexStart, indexEnd+1));
-        int idsender = (int) arr.get("idSender");
-        int idreceiver = (int) arr.get("idReceiver");
-        
-        String textmessage = (String) arr.get("textmessage");
-        String date = (String) arr.get("date");
-        if (idsender == iduser){
-          String username = getUserById(idreceiver);
-          reponse.add("Send : "+textmessage +"\nTo : "+ username+"\nAt "+ date+"\n-------------");
-        }
-        else if (idreceiver == iduser){
-          String username = getUserById(idsender);
-          reponse.add("Received : "+textmessage +"\nFrom : "+ username+"\nAt "+ date+"\n-------------");
-        }
-      } 
-    }
-    return reponse;
-  }*/
-
-  // return list of people who chat with user (iduser)
+  // return list of people who chat with user
   public static List<String> getChatList(int iduser){
     List<String> reponse = new ArrayList<>();
-    String textJSON = ReadHttpClient.getMessage();
+    String textJSON = ReadHttpClient.getChat();
     int indexStart = 0;
     int indexEnd = 0;    
     for (int i = 0; i <textJSON.length(); i++){
@@ -143,27 +120,25 @@ public class ReadHttpClient {
       if (charI=='}') {
         indexEnd = i;
         JSONObject arr = new JSONObject(sliceRange(textJSON,indexStart, indexEnd+1));
-        int idsender = (int) arr.get("idSender");
-        int idreceiver = (int) arr.get("idReceiver");
-        if (idsender == iduser){
-          String chat = getUserById(idreceiver);
-          if (!reponse.contains(chat)) reponse.add(chat);
-        }
-        else if (idreceiver == iduser){
-          String chat = getUserById(idsender);
-          if (!reponse.contains(chat)) reponse.add(chat);
+        int iduser1 = (int) arr.get("user1ChatRoom");
+        int iduser2 = (int) arr.get("user2ChatRoom");
+        int idchat = (int) arr.get("idChatRoom");
+        if (iduser1 == iduser){
+          if (!reponse.contains("Chat #"+idchat + " : "+getUserById(iduser2))) reponse.add("Chat #"+idchat + " : "+getUserById(iduser2));
+        } else if (iduser2 == iduser){
+          if (!reponse.contains("Chat #"+idchat + " : "+getUserById(iduser1))) reponse.add("Chat #"+idchat + " : "+getUserById(iduser1));
         }
       } 
     }
     return reponse;
   }
 
+  
+
   // return list of messages from a chat
-  public static List<String> getMessageFromChat(int iduser, String chatUsername){
+  public static List<String> getMessageFromChat(int idchat){
     List<String> reponse = new ArrayList<>();
-    int idchatuser = getIdByUser(chatUsername);
-    if (idchatuser==-1){reponse.add("USER DOES NOT EXIST");}
-    else{
+    
     String textJSON = ReadHttpClient.getMessage();
     
     int indexStart = 0;
@@ -177,24 +152,17 @@ public class ReadHttpClient {
         indexEnd = i;
         JSONObject arr = new JSONObject(sliceRange(textJSON,indexStart, indexEnd+1));
         int idsender = (int) arr.get("idSender");
-        int idreceiver = (int) arr.get("idReceiver");
-        
+        int idchatroom = (int) arr.get("idChatRoom");
         String textmessage = (String) arr.get("textmessage");
         String date = (String) arr.get("date");
-        if (idsender == iduser && idreceiver == idchatuser){
-          String username = getUserById(idreceiver);
-          reponse.add("SEND : "+textmessage +"\nTO : "+ username+"\nAT "+ date+"\n-------------");
-        }
-        else if (idreceiver == iduser && idsender == idchatuser){
+        if (idchatroom == idchat){
           String username = getUserById(idsender);
-          reponse.add("RECEIVED : "+textmessage +"\nFROM : "+ username+"\nAT "+ date+"\n-------------");
+          reponse.add("SEND : "+textmessage +"\nTO : "+ username+"\nAT "+ date+"\n-------------");
         }
       } 
     }
-  }
     return reponse;
   }
-
 
 
 

@@ -7,21 +7,19 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 
-
-
 @Data
 @Entity
 class ChatRoom {
 
   private @Id @GeneratedValue Long idChatRoom;
-  private String nameChatRoom;
+  private Long user1ChatRoom;
+  private Long user2ChatRoom;
 
   ChatRoom() {}
 
-  ChatRoom(Long idChatRoom, String nameChatRoom) {
-    this.idChatRoom = idChatRoom;
-    this.nameChatRoom = nameChatRoom;
-    
+  ChatRoom(Long user1ChatRoom, Long user2ChatRoom) {
+    this.user1ChatRoom = user1ChatRoom;
+    this.user2ChatRoom = user2ChatRoom;    
   }
 }
 

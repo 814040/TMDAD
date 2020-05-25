@@ -14,19 +14,16 @@ import javax.persistence.Id;
 class Message {
 
   private @Id @GeneratedValue Long idmessage;
-  //@OneToOne(cascade = {CascadeType.ALL})
-  //@JoinColumn(name = "idsender", referencedColumnName = "iduser")
   private Long idSender;
-
-  private Long idReceiver; 
+  private Long idChatRoom; 
   private String date;
   private String textmessage;
 
   Message() {}
 
-  Message(Long idSender, Long idReceiver, String date, String textmessage) {
+  Message(Long idSender, Long idChatRoom, String date, String textmessage) {
     this.idSender = idSender;
-    this.idReceiver = idReceiver;
+    this.idChatRoom = idChatRoom;
     //this.state = "SEND";
     this.date = date;
     this.textmessage = textmessage;

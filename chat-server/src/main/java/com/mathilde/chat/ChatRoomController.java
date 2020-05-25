@@ -12,54 +12,52 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-class MessageController {
+class ChatRoomController {
 
-  private final MessageRepository messageRepository;
+  private final ChatRoomRepository chatRoomRepository;
 
-  MessageController(final MessageRepository repository) {
-    this.messageRepository = repository;
+  ChatRoomController(final ChatRoomRepository repository) {
+    this.chatRoomRepository = repository;
   }
 
   // Aggregate root
 
-  @GetMapping("/message")
-  List<Message> all() {
-    return messageRepository.findAll();
+  @GetMapping("/chatroom")
+  List<ChatRoom> all() {
+    return chatRoomRepository.findAll();
   }
 
-  @PostMapping("/message")
-  Message newMessage(@RequestBody final Message newMessage) {
-    return messageRepository.save(newMessage);
+  @PostMapping("/chatroom")
+  ChatRoom newMessage(@RequestBody final ChatRoom newChatRoom) {
+    return chatRoomRepository.save(newChatRoom);
   }
 
   // Single item
 
-  @GetMapping("/message/{id}")
-  Message one(@PathVariable final Long id) {
+  @GetMapping("/chatroom/{id}")
+  ChatRoom one(@PathVariable final Long id) {
 
-    return messageRepository.findById(id).orElseThrow(() -> new MessageNotFoundException(id));
+    return chatRoomRepository.findById(id).orElseThrow(() -> new ChatRoomNotFoundException(id));
   }
 
-  @PutMapping("/message/{id}")
-  Message replaceMessage(@RequestBody Message newMessage,@PathVariable Long id) {
+  @PutMapping("/chatroom/{id}")
+  ChatRoom replaceChatRoom(@RequestBody ChatRoom newChatRoom,@PathVariable Long id) {
 
-    return messageRepository.findById(id)
-      .map(message -> {
-        message.setIdSender(newMessage.getIdSender());
-        message.setIdReceiver(newMessage.getIdReceiver());
-        //message.setState(newMessage.getState());
-        message.setTextmessage(newMessage.getTextmessage());
-        message.setDate(newMessage.getDate());
-        return messageRepository.save(message);
+    return chatRoomRepository.findById(id)
+      .map(chatRoom -> {
+        chatRoom.setIdChatRoom(newChatRoom.getIdChatRoom());
+        chatRoom.setUser1ChatRoom(newChatRoom.getUser1ChatRoom());
+        chatRoom.setUser2ChatRoom(newChatRoom.getUser2ChatRoom());
+        return chatRoomRepository.save(chatRoom);
       })
       .orElseGet(() -> {
-        newMessage.setIdmessage(id);
-        return messageRepository.save(newMessage);
+        newChatRoom.setIdChatRoom(id);
+        return chatRoomRepository.save(newChatRoom);
       });
   }
 
-  @DeleteMapping("/message/{id}")
+  @DeleteMapping("/chat/{id}")
   void deleteMessage(@PathVariable final Long id) {
-    messageRepository.deleteById(id);
+    chatRoomRepository.deleteById(id);
   }
 }
